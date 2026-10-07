@@ -1,334 +1,449 @@
 <!DOCTYPE html>
-<html>
-
+<html lang="zh-CN">
 <head>
-  <meta charset="utf-8" />
-  <link rel="shortcut icon"
-    href="https://static-index-4gtuqm3bfa95c963-1304825656.tcloudbaseapp.com/official-website/favicon.svg"
-    mce_href="https://static-index-4gtuqm3bfa95c963-1304825656.tcloudbaseapp.com/official-website/favicon.svg"
-    type="image/x-icon" />
-  <meta name="viewport"
-    content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet"
-    integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous" />
-  <title>欢迎使用微信云托管</title>
-  <style>
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Droid Sans", "Helvetica Neue", "PingFang SC", "Hiragino Sans GB", "Droid Sans Fallback", "Microsoft YaHei", sans-serif;
-    }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>七页奶茶社 · 商店后台</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: -apple-system, "PingFang SC", "Microsoft YaHei", sans-serif; background: #f5f6f8; color: #333; }
+  .hidden { display: none !important; }
 
-    .title-logo {
-      width: 80px;
-      height: 80px;
-    }
+  /* 登录 */
+  #login-page { max-width: 360px; margin: 120px auto; background: #fff; border-radius: 12px; padding: 32px; box-shadow: 0 4px 20px rgba(0,0,0,.06); }
+  #login-page h1 { font-size: 20px; text-align: center; margin-bottom: 8px; }
+  #login-page p { text-align: center; color: #999; font-size: 13px; margin-bottom: 24px; }
+  #login-page input { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; font-size: 15px; margin-bottom: 16px; outline: none; }
+  #login-page input:focus { border-color: #ff8a00; }
+  .btn { display: inline-block; border: none; border-radius: 8px; padding: 10px 18px; font-size: 14px; cursor: pointer; background: #eee; }
+  .btn-primary { background: #ff8a00; color: #fff; }
+  .btn-primary:hover { background: #f07d00; }
+  .btn-sm { padding: 5px 12px; font-size: 13px; border-radius: 6px; }
+  .btn-danger { background: #fee; color: #e5484d; }
+  .btn-block { width: 100%; padding: 12px; font-size: 15px; }
 
-    .container {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-    }
+  /* 主框架 */
+  #admin-page { display: flex; min-height: 100vh; }
+  #sidebar { width: 200px; background: #2b2f36; color: #ccc; padding-top: 20px; flex-shrink: 0; }
+  #sidebar .logo { color: #fff; font-weight: bold; text-align: center; padding: 0 16px 20px; font-size: 16px; border-bottom: 1px solid #3a3f47; margin-bottom: 8px; }
+  #sidebar .nav-item { padding: 13px 24px; cursor: pointer; font-size: 14px; }
+  #sidebar .nav-item:hover { background: #343941; }
+  #sidebar .nav-item.active { background: #ff8a00; color: #fff; }
+  #sidebar .logout { margin-top: 40px; color: #888; font-size: 13px; }
+  #main { flex: 1; padding: 24px; overflow: auto; }
 
-    @media screen and (min-width:1200px) {
-      body .top {
-        margin-top: 105px;
-      }
-      body .container {
-        margin-top: 0;
-        margin-bottom: 272px;
-      }
-    }
+  .stats { display: flex; gap: 16px; margin-bottom: 20px; flex-wrap: wrap; }
+  .stat-card { flex: 1; min-width: 160px; background: #fff; border-radius: 10px; padding: 18px; box-shadow: 0 2px 8px rgba(0,0,0,.04); }
+  .stat-card .label { color: #999; font-size: 13px; margin-bottom: 6px; }
+  .stat-card .value { font-size: 26px; font-weight: bold; color: #ff8a00; }
 
-    @media screen and (max-width:1919px) {
-      body .container {
-        margin-top: 0;
-        margin-bottom: 128px;
-      }
-    }
+  .panel { background: #fff; border-radius: 10px; padding: 20px; box-shadow: 0 2px 8px rgba(0,0,0,.04); }
+  .panel h2 { font-size: 16px; margin-bottom: 16px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; }
+  .toolbar { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+  .toolbar select, .toolbar input { padding: 7px 10px; border: 1px solid #ddd; border-radius: 6px; font-size: 13px; }
 
-    .container {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-    }
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  th, td { text-align: left; padding: 10px 8px; border-bottom: 1px solid #f0f0f0; vertical-align: top; }
+  th { color: #999; font-weight: normal; background: #fafafa; }
+  .status { display: inline-block; padding: 2px 10px; border-radius: 20px; font-size: 12px; }
+  .st-wait { background: #fff4e5; color: #ff8a00; }
+  .st-making { background: #e8f1ff; color: #2f6fed; }
+  .st-done { background: #e9f9ee; color: #2e9e5b; }
+  .st-cancel { background: #f2f2f2; color: #999; }
+  .tag-badge { display: inline-block; background: #fff4e5; color: #ff8a00; border-radius: 4px; padding: 1px 6px; font-size: 12px; margin-left: 6px; }
+  .items-cell { color: #666; line-height: 1.7; }
+  .empty { text-align: center; color: #bbb; padding: 40px 0; }
 
-    .count-button {
-      width: 320px;
-      height: 40px;
-      box-sizing: border-box;
-      margin: 16px 8px;
-      font-weight: 500;
-      font-size: 17px;
-      color: #FFFFFF;
-      letter-spacing: 1px;
-      text-align: center;
-      border-radius: 4px;
-    }
-
-    .count-number {
-      align-self: flex-start;
-      opacity: 0.9;
-      font-weight: 500;
-      font-size: 14px;
-      color: #000000;
-    }
-
-    .count-reset {
-      color: #576b95;
-      cursor: pointer;
-      margin-left: auto;
-    }
-
-    .count-text {
-      width: 320px;
-      height: 40px;
-      padding: 0 12px;
-      margin: 0 auto;
-      line-height: 40px;
-      text-align: left;
-      display: flex;
-      border: 1px solid rgba(0, 0, 0, 0.1);
-      border-radius: 4px;
-      opacity: 0.9;
-      box-sizing: border-box;
-      font-weight: 400;
-      font-size: 14px;
-      color: #000000;
-    }
-
-    .quote {
-      font-size: 12px;
-    }
-
-    .qrcode {
-      height: 144px;
-      width: 144px;
-      display: block;
-      margin: 0 auto;
-    }
-
-    .title {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-direction: column;
-      width: 320px;
-    }
-
-    .title-text {
-      width: 320px;
-      height: 48px;
-      text-align: center;
-      margin-top: 16px;
-      font-size: 32px;
-      opacity: 0.9;
-      font-weight: 500;
-      font-size: 32px;
-      color: #000000;
-      letter-spacing: 0;
-      line-height: 48px;
-    }
-
-    .counter-container {
-      margin-top: 48px;
-    }
-
-    .hr {
-      text-align: center;
-      position: relative;
-      z-index: 2;
-      height: 20px;
-      line-height: 20px;
-    }
-
-    .hr::after {
-      position: absolute;
-      content: '';
-      top: 10px;
-      left: 60px;
-      width: 200px;
-      border-bottom: 1px solid rgba(0, 0, 0, .1);
-      z-index: -1;
-    }
-
-    .hr small {
-      display: inline-block;
-      background-color: white;
-    }
-
-    .hr-text {
-      display: inline-block;
-      height: 20px;
-      font-weight: 400;
-      font-size: 14px;
-      color: rgba(0, 0, 0, 0.55);
-      letter-spacing: 0;
-      text-align: center;
-      z-index: 2;
-      background-color: white;
-      padding: 0 8px;
-      line-height: 20px;
-    }
-
-    .link-button {
-      width: 154px;
-      height: 48px;
-      box-sizing: border-box;
-      font-weight: 400;
-      font-size: 14px;
-      color: rgba(0, 0, 0, 0.90);
-      letter-spacing: 0;
-      text-align: center;
-      background: rgba(0, 0, 0, 0.03);
-      border-radius: 6px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .card {
-      margin-top: 16px;
-      width: 320px;
-      height: 200px;
-      box-sizing: border-box;
-      border: 1px solid rgba(0, 0, 0, 0.10);
-      border-radius: 5.71px;
-      position: relative;
-    }
-
-    .card-text {
-      text-align: center;
-      font-weight: 400;
-      font-size: 14px;
-      color: rgba(0, 0, 0, 0.55);
-      letter-spacing: 0;
-    }
-
-    .top {
-      width: 100%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      margin-top: 21px;
-      margin-bottom: 20px;
-    }
-    .alert {
-      font-size: 14px;
-      color: rgba(0, 0, 0, 0.55);
-      border: 1px solid #f2f4f8;
-      background: #f2f4f8;
-      padding: 6px;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      margin: 0;
-    }
-    .alert-icon {
-      flex-shrink: 0;
-      flex-grow: 0;
-      color: #c04100;
-    }
-  </style>
+  /* 弹窗 */
+  #modal-mask { position: fixed; inset: 0; background: rgba(0,0,0,.4); display: flex; align-items: center; justify-content: center; z-index: 10; }
+  #modal { background: #fff; border-radius: 12px; padding: 24px; width: 420px; max-width: 92vw; max-height: 88vh; overflow: auto; }
+  #modal h3 { font-size: 16px; margin-bottom: 16px; }
+  .form-item { margin-bottom: 12px; }
+  .form-item label { display: block; font-size: 13px; color: #666; margin-bottom: 4px; }
+  .form-item input, .form-item textarea, .form-item select { width: 100%; padding: 9px 10px; border: 1px solid #ddd; border-radius: 6px; font-size: 14px; outline: none; }
+  .form-item input:focus, .form-item textarea:focus { border-color: #ff8a00; }
+  .modal-actions { display: flex; gap: 10px; justify-content: flex-end; margin-top: 18px; }
+  .toast { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); background: #333; color: #fff; padding: 10px 22px; border-radius: 30px; font-size: 14px; z-index: 99; display: none; }
+  .search-input { padding: 7px 10px; border: 1px solid #ddd; border-radius: 6px; font-size: 13px; width: 180px; }
+</style>
 </head>
-
 <body>
-  <div class="top">
-    <div class="alert">
-      <svg id="error-circle" class="alert-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16"><g fill="none"><g clip-path="url(#clip0_19498_602)"><path d="M8.00016 2.00002C11.3139 2.00002 14.0002 4.68631 14.0002 8.00002C14.0002 11.3137 11.3139 14 8.00016 14C4.68646 14 2.00016 11.3137 2.00016 8.00002C2.00016 4.68631 4.68645 2.00002 8.00016 2.00002ZM15.3335 8.00002C15.3335 3.94993 12.0503 0.666687 8.00016 0.666688C3.95008 0.666688 0.66683 3.94993 0.666831 8.00002C0.666831 12.0501 3.95008 15.3334 8.00016 15.3334C12.0503 15.3334 15.3335 12.0501 15.3335 8.00002ZM7.3335 4.33335L7.3335 9.33335L8.66683 9.33335L8.66683 4.33335L7.3335 4.33335ZM8.66683 10.3334L7.33089 10.3334L7.33089 11.6693L8.66683 11.6693L8.66683 10.3334Z" fill="currentColor" fill-rule="evenodd" clip-rule="evenodd" fill-opacity="0.9"></path></g><defs><clipPath id="clip0_19498_602"><rect width="16" height="16" fill="white"></rect></clipPath></defs></g></svg>
-      <span>默认域名仅支持测试使用，服务上线生产请绑定自定义域名；测试期间默认域名浏览器操作有有效时间，过期后需手动续期。</span>
-    </div>
-  </div>
-  <div class="container">
-    <div class="title">
-      <img class="title-logo"
-        src="https://static-index-4gtuqm3bfa95c963-1304825656.tcloudbaseapp.com/official-website/favicon.svg" />
-      <div style="display: inline; margin-bottom: 48px" class="title-text">欢迎使用微信云托管</div>
-    </div>
-    <div style="text-align: center; display: flex; flex-direction: column; align-items: center; margin: 0">
-      <span class="count-text">
-        <span style="margin-right: 16px;">当前计数:</span>
-        <span class="count-number"></span>
-        <span class="count-reset" onclick="set('clear')">清零</span>
-      </span>
-      <a class="btn btn-success btn-lg count-button" style="background: #07c160; border: 0"
-        onclick="set('inc')">计数+1</a>
-      <div class="card" style="width: 320px; margin-bottom: 48px;">
-        <div class="card-body">
-          <img class="qrcode middle"
-            src="https://qcloudimg.tencent-cloud.cn/raw/89b46988d3cd73d8a56e76a1b82bb377.png" />
-          <small class="card-text" style="display: flex; justify-content: center; margin-top: 8px">扫码加入微信云托管用户群</small>
-        </div>
-      </div>
-      <div>
-        <div class="hr">
-          <span class="hr-text">快速入门</span>
-        </div>
-        <div style="display: flex; justify-content: space-between; margin-top: 16px;">
-          <a class="btn btn-light btn-lg link-button" style="border: 0; box-shadow: none; margin-right: 12px;"
-            href="https://developers.weixin.qq.com/miniprogram/dev/wxcloudrun/src/basic/intro.html" target="_blank"
-            rel="noopener noreferrer">
-            <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="24px"
-              height="24px" viewBox="0 0 24 24">
-              <title>icons_outline_warrant copy</title>
-              <g id="icons_outline_warrant-copy" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
-                <g id="0.&#x56FE;&#x6807;/&#x7EBF;&#x578B;/icons_outlined_copy">
-                  <rect id="Rectangle" x="0" y="0" width="20" height="20"></rect>
-                  <path
-                    d="M13.9979043,2 L20,8 L20,21.0013542 C20,21.5542301 19.5541613,22 19.0041915,22 L5.99580851,22 C5.44892021,22 5,21.552891 5,21.0013542 L5,2.99864581 C5,2.44576991 5.44583866,2 5.99580851,2 L13.9979043,2 Z M12.399,3.2 L6.2,3.2 L6.2,20.8 L18.8,20.8 L18.8,9.6 L14,9.6 C13.1163444,9.6 12.4,8.8836556 12.4,8 L12.399,3.2 Z M14.2,14.4 L14.2,15.6 L7.8,15.6 L7.8,14.4 L14.2,14.4 Z M17.2,12 L17.2,13.2 L7.8,13.2 L7.8,12 L17.2,12 Z M13.599,3.299 L13.6,8 C13.6,8.2209139 13.7790861,8.4 14,8.4 L18.703,8.4 L13.599,3.299 Z"
-                    id="Combined-Shape" fill-opacity="0.9" fill="#000000"></path>
-                </g>
-              </g>
-            </svg>
-            <span style="margin-left: 4px">开发者文档</span></a>
-          <a class="btn btn-light btn-lg link-button" style="border: 0; box-shadow: none;"
-            href="https://developers.weixin.qq.com/community/business/course/00068c2c0106c0667f5b01d015b80d"
-            target="_blank" rel="noopener noreferrer">
-            <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="24px"
-              height="24px" viewBox="0 0 24 24">
-              <title>icons_outlined_play</title>
-              <g id="&#x573A;&#x666F;&#x5316;&#x90E8;&#x7F72;" stroke="none" stroke-width="1" fill="none"
-                fill-rule="evenodd">
-                <g id="icons_outlined_play">
-                  <rect id="Rectangle-664" x="0" y="0" width="20" height="20"></rect>
-                  <path
-                    d="M12,20.8 C16.8601058,20.8 20.8,16.8601058 20.8,12 C20.8,7.1398942 16.8601058,3.2 12,3.2 C7.1398942,3.2 3.2,7.1398942 3.2,12 C3.2,16.8601058 7.1398942,20.8 12,20.8 Z M12,22 C6.4771525,22 2,17.5228475 2,12 C2,6.4771525 6.4771525,2 12,2 C17.5228475,2 22,6.4771525 22,12 C22,17.5228475 17.5228475,22 12,22 Z M10.7,14.8349028 L15.2358445,12 L10.7,9.16509717 L10.7,14.8349028 Z M10.2649995,7.47812467 L16.8216014,11.5760008 C17.0557696,11.722356 17.1269562,12.0308312 16.980601,12.2649995 C16.9403607,12.329384 16.8859859,12.3837588 16.8216014,12.4239992 L10.2649995,16.5218753 C10.0308312,16.6682305 9.72235601,16.5970439 9.57600085,16.3628756 C9.52633472,16.2834098 9.5,16.191586 9.5,16.0978762 L9.5,7.90212382 C9.5,7.62598145 9.72385763,7.40212382 10,7.40212382 C10.0937099,7.40212382 10.1855337,7.42845854 10.2649995,7.47812467 Z"
-                    id="Oval-78" fill-opacity="0.9" fill="#000000"></path>
-                </g>
-              </g>
-            </svg>
-            <span style="margin-left: 4px">视频教程</span></a>
-        </div>
-      </div>
-    </div>
-  </div>
-</body>
-<script src="https://code.jquery.com/jquery-1.12.4.min.js" integrity="sha256-ZosEbRLbNQzLpnKIkEdrPv7lOy9C27hHQ+Xp8a4MxAQ=" crossorigin="anonymous"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"
-  integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
-<script>
-  init();
-  function init() {
-    $.ajax("/api/count", {
-      method: "get",
-    }).done(function (res) {
-      if (res && res.data !== undefined) {
-        $(".count-number").html(res.data);
-      }
-    });
-  }
-  function set(action) {
-    $.ajax("/api/count", {
-      method: "POST",
-      contentType: "application/json; charset=utf-8",
-      dataType: "json",
-      data: JSON.stringify({
-        action: action,
-      }),
-    }).done(function (res) {
-      if (res && res.data !== undefined) {
-        $(".count-number").html(res.data);
-      }
-    });
-  }
-</script>
 
+<!-- 登录页 -->
+<div id="login-page">
+  <h1>🧋 七页奶茶社</h1>
+  <p>商店管理后台</p>
+  <input id="login-password" type="password" placeholder="请输入管理密码" autocomplete="current-password">
+  <button class="btn btn-primary btn-block" onclick="login()">登 录</button>
+</div>
+
+<!-- 管理主页 -->
+<div id="admin-page" class="hidden">
+  <div id="sidebar">
+    <div class="logo">🧋 七页奶茶社</div>
+    <div class="nav-item active" data-tab="orders" onclick="switchTab('orders')">📋 订单管理</div>
+    <div class="nav-item" data-tab="products" onclick="switchTab('products')">🧋 商品管理</div>
+    <div class="nav-item" data-tab="categories" onclick="switchTab('categories')">🏷️ 分类管理</div>
+    <div class="nav-item" data-tab="specs" onclick="switchTab('specs')">⚙️ 规格设置</div>
+    <div class="nav-item logout" onclick="logout()">退出登录</div>
+  </div>
+  <div id="main">
+    <div class="stats" id="stats"></div>
+
+    <!-- 订单管理 -->
+    <div class="panel" id="tab-orders">
+      <h2>
+        订单管理
+        <span class="toolbar">
+          <select id="order-status-filter" onchange="loadOrders()">
+            <option value="">全部状态</option>
+            <option>待支付</option>
+            <option>已支付·制作中</option>
+            <option>制作完成</option>
+            <option>已完成</option>
+            <option>已取消</option>
+          </select>
+          <input class="search-input" id="order-search" placeholder="搜索订单号/备注码" oninput="renderOrders()">
+          <button class="btn btn-sm" onclick="loadOrders()">刷新</button>
+        </span>
+      </h2>
+      <table>
+        <thead><tr><th>订单号</th><th>时间</th><th>方式</th><th>商品</th><th>备注码</th><th>金额</th><th>状态</th><th>操作</th></tr></thead>
+        <tbody id="orders-tbody"></tbody>
+      </table>
+    </div>
+
+    <!-- 商品管理 -->
+    <div class="panel hidden" id="tab-products">
+      <h2>商品管理 <button class="btn btn-primary btn-sm" onclick="editProduct()">＋ 新增商品</button></h2>
+      <table>
+        <thead><tr><th>商品</th><th>分类</th><th>价格</th><th>标签</th><th>排序</th><th>上架</th><th>操作</th></tr></thead>
+        <tbody id="products-tbody"></tbody>
+      </table>
+    </div>
+
+    <!-- 分类管理 -->
+    <div class="panel hidden" id="tab-categories">
+      <h2>分类管理 <button class="btn btn-primary btn-sm" onclick="editCategory()">＋ 新增分类</button></h2>
+      <table>
+        <thead><tr><th>ID</th><th>名称</th><th>排序</th><th>启用</th><th>操作</th></tr></thead>
+        <tbody id="categories-tbody"></tbody>
+      </table>
+    </div>
+
+    <!-- 规格设置 -->
+    <div class="panel hidden" id="tab-specs">
+      <h2>规格设置 <span style="font-size:12px;color:#999;font-weight:normal">杯型/小料含加价（元），用逗号分隔，格式：名称:加价</span></h2>
+      <div class="form-item"><label>杯型（如：中杯:0, 大杯:3）</label><textarea id="spec-cup" rows="2"></textarea></div>
+      <div class="form-item"><label>甜度（逗号分隔，如：无糖, 三分糖）</label><textarea id="spec-sugar" rows="2"></textarea></div>
+      <div class="form-item"><label>冰量（逗号分隔）</label><textarea id="spec-ice" rows="2"></textarea></div>
+      <div class="form-item"><label>小料（如：珍珠:2, 椰果:2）</label><textarea id="spec-toppings" rows="2"></textarea></div>
+      <button class="btn btn-primary" onclick="saveSpecs()">保存规格</button>
+    </div>
+  </div>
+</div>
+
+<!-- 通用弹窗 -->
+<div id="modal-mask" class="hidden">
+  <div id="modal"></div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+let token = localStorage.getItem('admin_token') || '';
+let orders = [], products = [], categories = [];
+
+// ---------- 工具 ----------
+function toast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.style.display = 'block';
+  setTimeout(() => t.style.display = 'none', 2000);
+}
+async function api(path, method = 'GET', body) {
+  const res = await fetch(path, {
+    method,
+    headers: { 'Content-Type': 'application/json', 'x-admin-token': token },
+    body: body ? JSON.stringify(body) : undefined,
+  });
+  const data = await res.json().catch(() => ({}));
+  if (res.status === 401) { logout(); throw new Error('登录已失效'); }
+  if (data.code !== 0) { toast(data.message || '操作失败'); throw new Error(data.message); }
+  return data.data;
+}
+function fmtTime(iso) {
+  if (!iso) return '-';
+  const d = new Date(iso);
+  const p = n => (n < 10 ? '0' + n : '' + n);
+  return d.getFullYear() + '-' + p(d.getMonth() + 1) + '-' + p(d.getDate()) + ' ' + p(d.getHours()) + ':' + p(d.getMinutes());
+}
+function fmtMoney(n) { return '¥' + (Number(n) || 0).toFixed(2); }
+function statusClass(s) {
+  if (s === '待支付') return 'st-wait';
+  if (s === '已支付·制作中') return 'st-making';
+  if (s === '制作完成' || s === '已完成') return 'st-done';
+  return 'st-cancel';
+}
+function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+
+// ---------- 登录 ----------
+async function login() {
+  const password = document.getElementById('login-password').value;
+  if (!password) return toast('请输入密码');
+  const res = await fetch('/api/admin/login', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ password }),
+  });
+  const data = await res.json();
+  if (data.code !== 0) return toast(data.message || '密码错误');
+  token = data.data.token;
+  localStorage.setItem('admin_token', token);
+  enterAdmin();
+}
+function logout() {
+  token = '';
+  localStorage.removeItem('admin_token');
+  document.getElementById('admin-page').classList.add('hidden');
+  document.getElementById('login-page').classList.remove('hidden');
+}
+function enterAdmin() {
+  document.getElementById('login-page').classList.add('hidden');
+  document.getElementById('admin-page').classList.remove('hidden');
+  loadStats(); loadOrders(); loadProducts(); loadCategories(); loadSpecs();
+}
+
+// ---------- 概况 ----------
+async function loadStats() {
+  try {
+    const s = await api('/api/admin/stats');
+    document.getElementById('stats').innerHTML = `
+      <div class="stat-card"><div class="label">今日订单</div><div class="value">${s.todayOrders}</div></div>
+      <div class="stat-card"><div class="label">今日营收</div><div class="value">${fmtMoney(s.todayRevenue)}</div></div>
+      <div class="stat-card"><div class="label">待支付</div><div class="value">${s.pendingOrders}</div></div>
+      <div class="stat-card"><div class="label">制作中</div><div class="value">${s.makingOrders}</div></div>`;
+  } catch (e) {}
+}
+
+// ---------- 订单 ----------
+async function loadOrders() {
+  const status = document.getElementById('order-status-filter').value;
+  orders = await api('/api/admin/orders' + (status ? '?status=' + encodeURIComponent(status) : ''));
+  renderOrders();
+  loadStats();
+}
+function renderOrders() {
+  const kw = (document.getElementById('order-search').value || '').trim().toLowerCase();
+  const list = kw ? orders.filter(o =>
+    (o.id || '').toLowerCase().includes(kw) || (o.remarkCode || '').includes(kw)) : orders;
+  const tbody = document.getElementById('orders-tbody');
+  if (list.length === 0) { tbody.innerHTML = '<tr><td colspan="8" class="empty">暂无订单</td></tr>'; return; }
+  tbody.innerHTML = list.map(o => `
+    <tr>
+      <td>${esc(o.id)}</td>
+      <td>${fmtTime(o.createdAt)}</td>
+      <td>${o.mode === 'delivery' ? '外送<br><small style="color:#999">${esc(o.address)}</small>' : o.mode === 'custom' ? '自定义' : '自取'}</td>
+      <td class="items-cell">${(o.items || []).map(i => esc(i.emoji || '') + ' ' + esc(i.name) + '<br><small>' + esc(i.spec) + ' × ' + i.qty + '</small>').join('<br>') || '—'}${o.note ? '<br><small style="color:#ff8a00">备注：' + esc(o.note) + '</small>' : ''}</td>
+      <td><b>${esc(o.remarkCode)}</b></td>
+      <td>${fmtMoney(o.total)}</td>
+      <td><span class="status ${statusClass(o.status)}">${esc(o.status)}</span></td>
+      <td>${orderActions(o)}</td>
+    </tr>`).join('');
+}
+function orderActions(o) {
+  const btn = (label, status) => `<button class="btn btn-sm" onclick="setOrderStatus('${o.id}','${status}')">${label}</button>`;
+  let html = '';
+  if (o.status === '待支付') html += btn('确认收款', '已支付·制作中') + ' ' + btn('取消', '已取消');
+  else if (o.status === '已支付·制作中') html += btn('制作完成', '制作完成') + ' ' + btn('取消', '已取消');
+  else if (o.status === '制作完成') html += btn('完成', '已完成');
+  else if (o.status === '已完成' || o.status === '已取消') html += '<span style="color:#ccc">—</span>';
+  return html;
+}
+async function setOrderStatus(id, status) {
+  await api('/api/admin/orders/' + id, 'PATCH', { status });
+  toast('已更新为：' + status);
+  loadOrders();
+}
+
+// ---------- 商品 ----------
+async function loadProducts() {
+  products = await api('/api/admin/products');
+  renderProducts();
+}
+function renderProducts() {
+  const tbody = document.getElementById('products-tbody');
+  if (products.length === 0) { tbody.innerHTML = '<tr><td colspan="7" class="empty">暂无商品</td></tr>'; return; }
+  tbody.innerHTML = products.map(p => `
+    <tr>
+      <td>${esc(p.emoji)} ${esc(p.name)}<br><small style="color:#999">${esc(p.desc)}</small></td>
+      <td>${esc(catName(p.categoryId))}</td>
+      <td>${fmtMoney(p.price)}</td>
+      <td>${p.tag ? '<span class="tag-badge">' + esc(p.tag) + '</span>' : '—'}</td>
+      <td>${p.sort}</td>
+      <td>${p.enabled ? '✅' : '❌'}</td>
+      <td>
+        <button class="btn btn-sm" onclick="editProduct(${p.id})">编辑</button>
+        <button class="btn btn-sm" onclick="toggleProduct(${p.id}, ${!p.enabled})">${p.enabled ? '下架' : '上架'}</button>
+        <button class="btn btn-sm btn-danger" onclick="deleteProduct(${p.id})">删除</button>
+      </td>
+    </tr>`).join('');
+}
+function catName(id) {
+  const c = categories.find(c => c.id === id);
+  return c ? c.name : id;
+}
+async function toggleProduct(id, enabled) {
+  await api('/api/admin/products/' + id, 'PUT', { enabled });
+  loadProducts();
+}
+async function deleteProduct(id) {
+  if (!confirm('确定删除该商品？')) return;
+  await api('/api/admin/products/' + id, 'DELETE');
+  toast('已删除');
+  loadProducts();
+}
+function editProduct(id) {
+  const p = id ? products.find(x => x.id === id) : {};
+  openModal(`<h3>${id ? '编辑商品' : '新增商品'}</h3>
+    <div class="form-item"><label>商品名称 *</label><input id="f-name" value="${esc(p.name || '')}"></div>
+    <div class="form-item"><label>分类</label><select id="f-cat">${categories.map(c => `<option value="${esc(c.id)}" ${p.categoryId === c.id ? 'selected' : ''}>${esc(c.name)}</option>`).join('')}</select></div>
+    <div class="form-item"><label>价格（元）*</label><input id="f-price" type="number" step="0.01" value="${p.price != null ? p.price : ''}"></div>
+    <div class="form-item"><label>Emoji 图标</label><input id="f-emoji" value="${esc(p.emoji || '🧋')}"></div>
+    <div class="form-item"><label>描述</label><textarea id="f-desc" rows="2">${esc(p.desc || '')}</textarea></div>
+    <div class="form-item"><label>标签（如：新品/招牌）</label><input id="f-tag" value="${esc(p.tag || '')}"></div>
+    <div class="form-item"><label>排序（越小越靠前）</label><input id="f-sort" type="number" value="${p.sort != null ? p.sort : 0}"></div>
+    <div class="modal-actions">
+      <button class="btn" onclick="closeModal()">取消</button>
+      <button class="btn btn-primary" onclick="saveProduct(${id || 0})">保存</button>
+    </div>`);
+}
+async function saveProduct(id) {
+  const body = {
+    name: document.getElementById('f-name').value.trim(),
+    categoryId: document.getElementById('f-cat').value,
+    price: document.getElementById('f-price').value,
+    emoji: document.getElementById('f-emoji').value.trim() || '🧋',
+    desc: document.getElementById('f-desc').value.trim(),
+    tag: document.getElementById('f-tag').value.trim(),
+    sort: document.getElementById('f-sort').value,
+  };
+  if (!body.name || body.price === '') return toast('请填写名称和价格');
+  if (id) await api('/api/admin/products/' + id, 'PUT', body);
+  else await api('/api/admin/products', 'POST', body);
+  closeModal(); toast('已保存'); loadProducts();
+}
+
+// ---------- 分类 ----------
+async function loadCategories() {
+  categories = await api('/api/admin/categories');
+  renderCategories();
+}
+function renderCategories() {
+  const tbody = document.getElementById('categories-tbody');
+  if (categories.length === 0) { tbody.innerHTML = '<tr><td colspan="5" class="empty">暂无分类</td></tr>'; return; }
+  tbody.innerHTML = categories.map(c => `
+    <tr>
+      <td>${esc(c.id)}</td>
+      <td>${esc(c.name)}</td>
+      <td>${c.sort}</td>
+      <td>${c.enabled ? '✅' : '❌'}</td>
+      <td>
+        <button class="btn btn-sm" onclick="editCategory('${esc(c.id)}')">编辑</button>
+        <button class="btn btn-sm btn-danger" onclick="deleteCategory('${esc(c.id)}')">删除</button>
+      </td>
+    </tr>`).join('');
+  renderProducts();
+}
+async function deleteCategory(id) {
+  if (!confirm('确定删除该分类？')) return;
+  await api('/api/admin/categories/' + id, 'DELETE');
+  toast('已删除');
+  loadCategories();
+}
+function editCategory(id) {
+  const c = id ? categories.find(x => x.id === id) : {};
+  openModal(`<h3>${id ? '编辑分类' : '新增分类'}</h3>
+    <div class="form-item"><label>分类ID *（英文标识，创建后不可改）</label><input id="f-cid" value="${esc(c.id || '')}" ${id ? 'disabled' : ''}></div>
+    <div class="form-item"><label>分类名称 *</label><input id="f-cname" value="${esc(c.name || '')}"></div>
+    <div class="form-item"><label>排序</label><input id="f-csort" type="number" value="${c.sort != null ? c.sort : 0}"></div>
+    <div class="modal-actions">
+      <button class="btn" onclick="closeModal()">取消</button>
+      <button class="btn btn-primary" onclick="saveCategory('${esc(id || '')}')">保存</button>
+    </div>`);
+}
+async function saveCategory(id) {
+  const body = {
+    name: document.getElementById('f-cname').value.trim(),
+    sort: document.getElementById('f-csort').value,
+  };
+  if (!body.name) return toast('请填写分类名称');
+  if (id) await api('/api/admin/categories/' + id, 'PUT', body);
+  else {
+    body.id = document.getElementById('f-cid').value.trim();
+    if (!body.id) return toast('请填写分类ID');
+    await api('/api/admin/categories', 'POST', body);
+  }
+  closeModal(); toast('已保存'); loadCategories();
+}
+
+// ---------- 规格 ----------
+let currentSpecs = null;
+async function loadSpecs() {
+  currentSpecs = await api('/api/admin/specs');
+  document.getElementById('spec-cup').value = (currentSpecs.cup || []).map(x => x.name + ':' + x.extra).join(', ');
+  document.getElementById('spec-sugar').value = (currentSpecs.sugar || []).join(', ');
+  document.getElementById('spec-ice').value = (currentSpecs.ice || []).join(', ');
+  document.getElementById('spec-toppings').value = (currentSpecs.toppings || []).map(x => x.name + ':' + x.extra).join(', ');
+}
+function parsePriced(str) {
+  return str.split(/[,，]/).map(s => s.trim()).filter(Boolean).map(s => {
+    const [name, extra] = s.split(/[:：]/);
+    return { name: (name || '').trim(), extra: Number(extra || 0) };
+  }).filter(x => x.name);
+}
+function parsePlain(str) {
+  return str.split(/[,，]/).map(s => s.trim()).filter(Boolean);
+}
+async function saveSpecs() {
+  const value = {
+    cup: parsePriced(document.getElementById('spec-cup').value),
+    sugar: parsePlain(document.getElementById('spec-sugar').value),
+    ice: parsePlain(document.getElementById('spec-ice').value),
+    toppings: parsePriced(document.getElementById('spec-toppings').value),
+  };
+  await api('/api/admin/specs', 'PUT', value);
+  toast('规格已保存');
+}
+
+// ---------- 弹窗 ----------
+function openModal(html) {
+  document.getElementById('modal').innerHTML = html;
+  document.getElementById('modal-mask').classList.remove('hidden');
+}
+function closeModal() {
+  document.getElementById('modal-mask').classList.add('hidden');
+}
+document.getElementById('modal-mask').addEventListener('click', e => {
+  if (e.target.id === 'modal-mask') closeModal();
+});
+document.getElementById('login-password').addEventListener('keydown', e => {
+  if (e.key === 'Enter') login();
+});
+
+// ---------- Tab 切换 ----------
+function switchTab(tab) {
+  document.querySelectorAll('.nav-item').forEach(el => el.classList.toggle('active', el.dataset.tab === tab));
+  ['orders', 'products', 'categories', 'specs'].forEach(t => {
+    document.getElementById('tab-' + t).classList.toggle('hidden', t !== tab);
+  });
+}
+
+// ---------- 启动 ----------
+if (token) {
+  // 已有 token 时先验证
+  api('/api/admin/stats').then(enterAdmin).catch(() => {});
+}
+</script>
+</body>
 </html>
