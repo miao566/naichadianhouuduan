@@ -5,6 +5,17 @@ const { MYSQL_USERNAME, MYSQL_PASSWORD, MYSQL_ADDRESS = "" } = process.env;
 
 const [host, port] = MYSQL_ADDRESS.split(":");
 
+// 先连接 MySQL（不指定库），自动创建业务数据库
+async function ensureDatabase() {
+  const conn = new Sequelize(
+    "mysql://" + encodeURIComponent(MYSQL_USERNAME) + ":" + encodeURIComponent(MYSQL_PASSWORD) +
+    "@" + (host || "localhost") + ":" + (port || "3306"),
+    { logging: false }
+  );
+  await conn.query("CREATE DATABASE IF NOT EXISTS `nodejs_demo` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;");
+  await conn.close();
+}
+
 const sequelize = new Sequelize("nodejs_demo", MYSQL_USERNAME, MYSQL_PASSWORD, {
   host,
   port,
@@ -88,6 +99,8 @@ function toPlainOrder(o) {
 
 // 数据库初始化方法（含默认数据写入）
 async function init() {
+  await ensureDatabase();
+  await sequelize.authenticate();
   await Category.sync({ alter: true });
   await Product.sync({ alter: true });
   await Order.sync({ alter: true });

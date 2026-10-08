@@ -307,10 +307,16 @@ app.put("/api/admin/specs", adminAuth, async (req, res) => {
 const port = process.env.PORT || 80;
 
 async function bootstrap() {
-  await initDB();
-  app.listen(port, () => {
-    console.log("七页奶茶社后台启动成功，端口:", port);
-  });
+  try {
+    await initDB();
+    app.listen(port, () => {
+      console.log("七页奶茶社后台启动成功，端口:", port);
+    });
+  } catch (err) {
+    console.error("启动失败：", err && (err.message || err));
+    if (err && err.original) console.error("数据库原始错误：", err.original.message);
+    process.exit(1);
+  }
 }
 
 bootstrap();
